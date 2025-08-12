@@ -1,0 +1,74 @@
+generator client { provider = "prisma-client-js" }
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(CASHIER)
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id        String   @id @default(cuid())
+  sku       String   @unique
+  name      String
+  price     Float
+  cost      Float
+  stock     Int      @default(0)
+  lowStock  Int      @default(5)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  InvoiceItem InvoiceItem[]
+  PurchaseItem PurchaseItem[]
+}
+
+model Purchase {
+  id        String   @id @default(cuid())
+  supplier  String?
+  items     PurchaseItem[]
+  total     Float
+  createdAt DateTime @default(now())
+}
+
+model PurchaseItem {
+  id         String  @id @default(cuid())
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  purchaseId String
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  String
+  qty        Int
+  cost       Float
+}
+
+model Invoice {
+  id        String   @id @default(cuid())
+  customer  String?
+  items     InvoiceItem[]
+  subtotal  Float
+  tax       Float
+  total     Float
+  createdAt DateTime @default(now())
+}
+
+model InvoiceItem {
+  id        String  @id @default(cuid())
+  invoice   Invoice @relation(fields:[invoiceId], references:[id])
+  invoiceId String
+  product   Product @relation(fields:[productId], references:[id])
+  productId String
+  qty       Int
+  price     Float
+  gst       Float
+}
+
+enum Role {
+  ADMIN
+  CASHIER
+}

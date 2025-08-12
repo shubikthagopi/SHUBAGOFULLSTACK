@@ -1,0 +1,29 @@
+{
+  "name": "shubago-api",
+  "version": "0.2.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon --watch src --exec node -r dotenv/config src/index.js",
+    "start": "node -r dotenv/config src/index.js",
+    "migrate": "npx prisma migrate dev --name init --preview-feature",
+    "prisma-generate": "npx prisma generate",
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.0",
+    "prisma": "^5.6.0",
+    "@prisma/client": "^5.6.0",
+    "pg": "^8.11.0",
+    "pug": "^3.0.2",
+    "body-parser": "^1.20.2",
+    "exceljs": "^4.3.0",
+    "csv-writer": "^1.6.0",
+    "puppeteer": "^20.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}

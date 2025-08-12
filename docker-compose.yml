@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: shubago
+      POSTGRES_PASSWORD: shubago_pass
+      POSTGRES_DB: shubago_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  api:
+    build: ./api
+    restart: unless-stopped
+    env_file: ./api/.env
+    depends_on:
+      - db
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./api:/usr/src/app
+    command: ["npm", "run", "dev"]
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/usr/src/app
+    command: ["npm", "run", "dev"]
+
+  migrations:
+    image: node:20-alpine
+    working_dir: /usr/src/app
+    volumes:
+      - ./api:/usr/src/app
+    env_file: ./api/.env
+    command: ["sh", "-c", "npm install && npx prisma migrate deploy && node prisma/seed.js"]
+    depends_on:
+      - db
+
+volumes:
+  db_data:
